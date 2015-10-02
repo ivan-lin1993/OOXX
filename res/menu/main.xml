@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.ooxx.MainActivity" >
+	
+    <item android:id="@+id/Restart"
+	android:title="@string/Restart"/>
+	<item android:id="@+id/Exit"
+	android:title="@string/Exit"/>
+</menu>
+

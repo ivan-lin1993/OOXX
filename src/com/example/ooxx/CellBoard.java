@@ -7,8 +7,10 @@ public class CellBoard {
 	private int w;
 	private int h;
 	protected Cell[] position;
+	protected Cell text;
 	private int cell_num=9;
 	private boolean nowPresentX=true;
+	private char win=' ';
 	
 	public CellBoard(int cellWidth,int cellHeight){
 		w=cellWidth;
@@ -17,11 +19,11 @@ public class CellBoard {
 	}
 	private class Cell extends RectF{
 		private boolean filled;
-		private int present;
+		private char present;
 		public Cell(float left, float top,float right,float bottom){
 			super(left,top,right,bottom);
 			filled=false;
-			present=0;
+			present=' ';
 		}
 		public void setFilled(boolean filled){
 			this.filled=filled;
@@ -29,17 +31,18 @@ public class CellBoard {
 		public boolean isFilled(){
 			return filled;
 		}
-		public void setPresent(int c){
+		public void setPresent(char c){
 			present=c;
 		}
-		public int showPresent(){
+		public char showPresent(){
 			return present;
 		}
 	}
 	public void Restart(){
 		nowPresentX=true;
 		for(int i=0;i<cell_num;i++){
-			position[i].present=0;
+			position[i].present=' ';
+			position[i].setFilled(false);
 		}
 	}
 	private void initialBoardCells(){
@@ -61,21 +64,21 @@ public class CellBoard {
 			if(bp.contains(x, y)&&!bp.isFilled()){
 				RectF retCell=new RectF(bp);
 				bp.setFilled(true);
-				if(nowPresentX) bp.setPresent(1);
-				else bp.setPresent(2);
+				if(nowPresentX) bp.setPresent('X');
+				else bp.setPresent('O');
 				Turn();
 				return retCell;
 			}
 		}
 		return null;
 	}
-	public int getCellPresent(float x,float y){
+	public char getCellPresent(float x,float y){
 		for (Cell bp: position){
 			if(bp.contains(x, y)){
 				return bp.showPresent();
 			}
 		}
-		return 0;
+		return ' ';
 	}
 	private void Turn(){
 		nowPresentX=!nowPresentX;
@@ -84,14 +87,51 @@ public class CellBoard {
 		return position[ind].showPresent();
 	}
 	public boolean isOver(){
-		if(position[0].present!=0&&position[0].present==position[1].present&&position[1].present==position[2].present) return true;
-		else if(position[3].present!=0&&position[3].present==position[4].present&&position[4].present==position[5].present) return true;
-		else if(position[6].present!=0&&position[6].present==position[7].present&&position[7].present==position[8].present) return true;
-		else if(position[0].present!=0&&position[0].present==position[3].present&&position[3].present==position[6].present) return true;
-		else if(position[1].present!=0&&position[1].present==position[4].present&&position[4].present==position[7].present) return true;
-		else if(position[2].present!=0&&position[2].present==position[5].present&&position[5].present==position[8].present) return true;
-		else if(position[0].present!=0&&position[0].present==position[4].present&&position[4].present==position[8].present) return true;
-		else if(position[2].present!=0&&position[2].present==position[4].present&&position[4].present==position[6].present) return true;
+		if(isFull()) return true;
+		if(position[0].present!=' '&&position[0].present==position[1].present&&position[1].present==position[2].present) {
+			win=position[0].present;
+			return true;
+		}
+		else if(position[3].present!=' '&&position[3].present==position[4].present&&position[4].present==position[5].present) {
+			win=position[3].present;
+			return true;
+		}
+		else if(position[6].present!=' '&&position[6].present==position[7].present&&position[7].present==position[8].present) {
+			win=position[6].present;
+			return true;
+		}
+		else if(position[0].present!=' '&&position[0].present==position[3].present&&position[3].present==position[6].present) {
+			win=position[0].present;
+			return true;
+		}
+		else if(position[1].present!=' '&&position[1].present==position[4].present&&position[4].present==position[7].present) {
+			win=position[1].present;
+			return true;
+		}
+		else if(position[2].present!=' '&&position[2].present==position[5].present&&position[5].present==position[8].present) {
+			win=position[2].present;
+			return true;
+		}
+		else if(position[0].present!=' '&&position[0].present==position[4].present&&position[4].present==position[8].present) {
+			win=position[0].present;
+			return true;
+		}
+		else if(position[2].present!=' '&&position[2].present==position[4].present&&position[4].present==position[6].present) {
+			win=position[2].present;
+			return true;
+		}
 		else return false;
+	}
+	private boolean isFull() {
+		// TODO Auto-generated method stub
+		for (int i=0;i<cell_num;i++){
+			if(position[i].present==' ') return false;
+		}
+		return true;
+	}
+	public char winner() {
+		// TODO Auto-generated method stub
+		
+		return win;
 	}
 }

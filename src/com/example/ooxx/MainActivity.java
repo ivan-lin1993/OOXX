@@ -60,17 +60,19 @@ public class MainActivity extends Activity {
 		float a=0,b=0;
 		mb.TouchFunc(event,a,b);
 		if(mb.isOver()) {
-			CreateDialog();
-			mb.Restart();
+			//CreateDialog();
+			//System.exit(0);
+			
 		}
 		
 		
 		return true;
 	}
 	public void CreateDialog(){
+		
 		AlertDialog.Builder builder=new AlertDialog.Builder(this);
-		builder//.setTitle("µ≤ßÙ")
-		.setMessage("¿Ú≥”")
+		builder.setTitle("¿Ú≥”")
+		.setMessage("123")
 		.setNegativeButton("Restart", new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -83,16 +85,11 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
 				finish();
 			}
 		});
 		builder.show();
 	}
 
-	public void myMethod() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

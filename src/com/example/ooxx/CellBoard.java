@@ -1,6 +1,7 @@
 package com.example.ooxx;
 
 import android.graphics.RectF;
+import android.util.Log;
 
 public class CellBoard {
 	private int w;
@@ -33,6 +34,12 @@ public class CellBoard {
 		}
 		public int showPresent(){
 			return present;
+		}
+	}
+	public void Restart(){
+		nowPresentX=true;
+		for(int i=0;i<cell_num;i++){
+			position[i].present=0;
 		}
 	}
 	private void initialBoardCells(){

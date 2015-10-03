@@ -2,9 +2,14 @@ package com.example.ooxx;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -12,6 +17,13 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);   //全螢幕設定
+	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+	    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	    
 		//setContentView(R.layout.activity_main);
 		mb=new MainBoard(this);
 		setContentView(mb);
@@ -43,11 +55,38 @@ public class MainActivity extends Activity {
 		
 		return super.onOptionsItemSelected(item);
 	}
+	@Override
+	public boolean onTouchEvent(MotionEvent event){
+		float a=0,b=0;
+		mb.TouchFunc(event,a,b);
+		if(mb.isOver()) {
+			CreateDialog();
+			mb.Restart();
+		}
+		
+		
+		return true;
+	}
 	public void CreateDialog(){
 		AlertDialog.Builder builder=new AlertDialog.Builder(this);
-		builder.setTitle("結束")
-		.setMessage("ok")
-		.setNegativeButton("1", null);
+		builder//.setTitle("結束")
+		.setMessage("獲勝")
+		.setNegativeButton("Restart", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				setContentView(mb);
+				mb.Restart();
+			}
+		})
+		.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
 		builder.show();
 	}
 

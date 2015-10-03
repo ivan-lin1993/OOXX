@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainBoard extends View{
 	private int h,w;
@@ -17,16 +18,22 @@ public class MainBoard extends View{
 	private Paint paint;
 	private Point[] hLine01,hLine02,vLine01,vLine02;
 	private CellBoard cellBoard;
-	
-	
+	private boolean isover=false;
+	private int win_present=0;
 	
 	
 	public MainBoard (Context context){
 		super(context);
 		paint= new Paint();
-		paint.setColor(Color.BLACK);
+		paint.setColor(Color.WHITE);
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setStrokeWidth(20);
+		
+		
+	}
+	public void Restart(){
+		cellBoard.Restart();
+		isover=false;
 	}
 	@Override
 	protected void onDraw(Canvas canvas){
@@ -37,9 +44,14 @@ public class MainBoard extends View{
 		h=View.MeasureSpec.getSize(heightMeasureSpec);
 		w=View.MeasureSpec.getSize(widthMeasureSpec);
 		setMeasuredDimension(w,h);
-		bitmap=Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		bitmap=Bitmap.createBitmap(w, h/3*2, Bitmap.Config.ARGB_8888);
 		buffer=new Canvas(bitmap);
+		paint.setColor(Color.BLACK);
+		buffer.drawPaint(paint);
+		paint.setColor(Color.WHITE);
 		calculateLinePlacements();
+		
+		
 		drawBoard();
 	}
 	private void drawBoard(){
@@ -49,8 +61,9 @@ public class MainBoard extends View{
 		buffer.drawLine(vLine02[0].x, vLine02[0].y, vLine02[1].x,vLine02[1].y, paint);
 	}
 	private void calculateLinePlacements(){
-		int cellH=h/3;
+		//int cellH=h/3;
 		int cellW=w/3;
+		int cellH=cellW+50;
 		hLine01=new Point[2];
 		Point p1 =new Point(0,cellH);
 		Point p2=new Point(w,cellH);
@@ -71,32 +84,39 @@ public class MainBoard extends View{
 		p2=new Point(2*cellW,h);
 		vLine02[0]=p1;
 		vLine02[1]=p2;
+		
 		cellBoard=new CellBoard(cellW,cellH);
 	}
-	@Override
-	public boolean onTouchEvent (MotionEvent event){
-		float x=event.getX();
-		float y=event.getY();
+	
+	public boolean TouchFunc (MotionEvent event,float a,float b){
+		//float x=event.getX();
+		//float y=event.getY();
+		a=event.getX();
+		b=event.getY();
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
-			RectF position=cellBoard.getCellToFill(x, y);
-			int present=cellBoard.getCellPresent(x,y);
+			RectF position=cellBoard.getCellToFill(event.getRawX(), event.getRawY());
+			int present=cellBoard.getCellPresent(event.getRawX(),event.getRawY());
 			if(position!=null){
 				if(present==1){
+					paint.setColor(Color.BLUE);
 					buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
 					buffer.drawLine(position.right, position.top, position.left, position.bottom, paint);
 				}
 				else if (present==2){
+					paint.setColor(Color.RED);
 					buffer.drawOval(position, paint);
 				}
 				invalidate();
 				}
 			}
 		if(cellBoard.isOver()){
-			
-			Dialog d=new Dialog(null);
-			//System.exit(0);
+			isover=true;
 		}
 		return true;
+	}
+	public boolean isOver(){
+		
+		return isover;
 	}
 
 }

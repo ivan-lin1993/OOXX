@@ -1,6 +1,5 @@
 package com.example.ooxx;
-import android.R.color;
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -9,10 +8,12 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
+
+@SuppressLint("DrawAllocation")
 public class MainBoard extends View{
 	private int h,w;
 	private Bitmap bitmap;
@@ -21,17 +22,11 @@ public class MainBoard extends View{
 	private Point[] hLine01,hLine02,vLine01,vLine02;
 	private CellBoard cellBoard;
 	private boolean isover=false;
-	private int win_present=0;
-	
+
 	
 	public MainBoard (Context context){
 		super(context);
 		paint= new Paint();
-		//paint.setColor(Color.WHITE);
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(20);
-		
-		
 	}
 	public void Restart(){
 		cellBoard.Restart();
@@ -43,6 +38,7 @@ public class MainBoard extends View{
 	protected void onDraw(Canvas canvas){
 		canvas.drawBitmap(bitmap, 0, 0 ,paint);
 	}
+	@SuppressLint("DrawAllocation")
 	@Override
 	protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
 		h=View.MeasureSpec.getSize(heightMeasureSpec);
@@ -52,10 +48,10 @@ public class MainBoard extends View{
 		buffer=new Canvas(bitmap);
 		
 		calculateLinePlacements();
-		
 		drawBoard();
 	}
 	private void drawBoard(){
+		paint.setStrokeWidth(20);
 		paint.setColor(Color.WHITE);
 		buffer.drawPaint(paint);
 		paint.setColor(Color.BLACK);
@@ -63,13 +59,14 @@ public class MainBoard extends View{
 		buffer.drawLine(hLine02[0].x, hLine02[0].y, hLine02[1].x,hLine02[1].y, paint);
 		buffer.drawLine(vLine01[0].x, vLine01[0].y, vLine01[1].x,vLine01[1].y, paint);
 		buffer.drawLine(vLine02[0].x, vLine02[0].y, vLine02[1].x,vLine02[1].y, paint);
-		paint.setColor(Color.GREEN);
+		paint.setColor(Color.RED);
 		paint.setStyle(Paint.Style.FILL);
 		paint.setAntiAlias(true);
 		paint.setTextSize(100);
+		paint.setTextSkewX((float) -0.5);
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		buffer.drawText("Restart",w/2+80,h-80,paint);
-		paint.setStyle(Paint.Style.STROKE);
-		buffer.drawRect(w/2+70,h-200,w/2+450,h-50, paint);
+		paint.setStrokeWidth(20);
 	}
 	private void calculateLinePlacements(){
 		//int cellH=h/3;
@@ -105,39 +102,47 @@ public class MainBoard extends View{
 		a=event.getX();
 		b=event.getY();
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
-			RectF position=cellBoard.getCellToFill(a, b);
-			char present=cellBoard.getCellPresent(a,b);
+			
 			
 			int a1=(int)a,b1=(int)b;
-			//buffer.drawText("X:"+String.valueOf(a), 0, h-30, paint);
-			//buffer.drawText("21321", 0, h-30, paint);
 			if(a1>w/2+70&&a1<w/2+450&&b1>h-200&&b1<h-50){
 				Restart();
 				invalidate();
 				//buffer.drawText("Success", 0, h-30, paint);
 			}
 			
-			if(position!=null&&isover==false){
-				if(present=='X'){
-					paint.setColor(Color.BLUE);
-					buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
-					buffer.drawLine(position.right, position.top, position.left, position.bottom, paint);
+			if(isover==false){
+				RectF position=cellBoard.getCellToFill(a, b);
+				if(position!=null){
+					char present=cellBoard.getCellPresent(a,b);
+					if(present=='X'){
+						paint.setColor(Color.BLUE);
+						buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
+						buffer.drawLine(position.right, position.top, position.left, position.bottom, paint);
+					}
+					else if (present=='O'){
+						paint.setColor(Color.RED);
+						paint.setStyle(Paint.Style.STROKE);
+						buffer.drawOval(position, paint);
+					}
+					invalidate();
 				}
-				else if (present=='O'){
-					paint.setColor(Color.RED);
-					paint.setStyle(Paint.Style.STROKE);
-					buffer.drawOval(position, paint);
-				}
-				invalidate();
 			}
 
 		}
-		
 		if(cellBoard.isOver()){
 			isover=true;
-			//Restart();
+			
+			Point[] winLine=cellBoard.showWinLine();
+			paint.setColor(Color.GREEN);
+			paint.setStyle(Paint.Style.STROKE);
+			
+			if(cellBoard.winner()!=' '){
+				paint.setStrokeWidth(50);
+				buffer.drawLine(winLine[0].x,winLine[0].y,winLine[1].x,winLine[1].y, paint);
+			}
+			invalidate();
 		}
-		
 		return true;
 	}
 	public boolean isOver(){

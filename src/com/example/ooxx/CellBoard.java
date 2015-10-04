@@ -1,7 +1,7 @@
 package com.example.ooxx;
 
+import android.graphics.Point;
 import android.graphics.RectF;
-import android.util.Log;
 
 public class CellBoard {
 	private int w;
@@ -11,11 +11,17 @@ public class CellBoard {
 	private int cell_num=9;
 	private boolean nowPresentX=true;
 	private char win=' ';
+	private Point []winLine;
 	
 	public CellBoard(int cellWidth,int cellHeight){
 		w=cellWidth;
 		h=cellHeight;
 		initialBoardCells();
+		winLine=new Point[2];
+		Point p1 =new Point(0,0);
+		Point p2=new Point(0,0);
+		winLine[0]=p1;
+		winLine[1]=p2;
 	}
 	private class Cell extends RectF{
 		private boolean filled;
@@ -44,6 +50,7 @@ public class CellBoard {
 			position[i].present=' ';
 			position[i].setFilled(false);
 		}
+		win=' ';
 	}
 	private void initialBoardCells(){
 		int offset=50;
@@ -88,36 +95,52 @@ public class CellBoard {
 	}
 	public boolean isOver(){
 		if(isFull()) return true;
+		int ind1=0,ind2=0;
 		if(position[0].present!=' '&&position[0].present==position[1].present&&position[1].present==position[2].present) {
 			win=position[0].present;
-			return true;
+			ind1=0;
+			ind2=2;
 		}
 		else if(position[3].present!=' '&&position[3].present==position[4].present&&position[4].present==position[5].present) {
 			win=position[3].present;
-			return true;
+			ind1=3;
+			ind2=5;
 		}
 		else if(position[6].present!=' '&&position[6].present==position[7].present&&position[7].present==position[8].present) {
 			win=position[6].present;
-			return true;
+			ind1=6;
+			ind2=8;
 		}
 		else if(position[0].present!=' '&&position[0].present==position[3].present&&position[3].present==position[6].present) {
 			win=position[0].present;
-			return true;
+			ind1=0;
+			ind2=6;
 		}
 		else if(position[1].present!=' '&&position[1].present==position[4].present&&position[4].present==position[7].present) {
 			win=position[1].present;
-			return true;
+			ind1=1;
+			ind2=7;
 		}
 		else if(position[2].present!=' '&&position[2].present==position[5].present&&position[5].present==position[8].present) {
 			win=position[2].present;
-			return true;
+			ind1=2;
+			ind2=8;
 		}
 		else if(position[0].present!=' '&&position[0].present==position[4].present&&position[4].present==position[8].present) {
 			win=position[0].present;
-			return true;
+			ind1=0;
+			ind2=8;
 		}
 		else if(position[2].present!=' '&&position[2].present==position[4].present&&position[4].present==position[6].present) {
 			win=position[2].present;
+			ind1=2;
+			ind2=6;
+		}
+		if(win!=' '){
+			winLine[0].x=(int) position[ind1].centerX();
+			winLine[0].y=(int) position[ind1].centerY();
+			winLine[1].x=(int) position[ind2].centerX();
+			winLine[1].y=(int) position[ind2].centerY();
 			return true;
 		}
 		else return false;
@@ -133,5 +156,8 @@ public class CellBoard {
 		// TODO Auto-generated method stub
 		
 		return win;
+	}
+	public Point[] showWinLine(){
+		return winLine;
 	}
 }

@@ -58,11 +58,6 @@ public class MainActivity extends Activity {
 	public boolean onTouchEvent(MotionEvent event){
 		float a=0,b=0;
 		mb.TouchFunc(event,a,b);
-		if(mb.isOver()) {
-			//CreateDialog();
-			//System.exit(0);
-			
-		}
 		
 		
 		return true;

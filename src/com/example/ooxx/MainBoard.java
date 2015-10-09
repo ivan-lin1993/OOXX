@@ -21,18 +21,18 @@ public class MainBoard extends View{
 	private Paint paint;
 	private Point[] hLine01,hLine02,vLine01,vLine02;
 	private CellBoard cellBoard;
-	private boolean isover=false;
-
+	private Game game=new Game();
+	private AI ai;
 	
 	public MainBoard (Context context){
 		super(context);
 		paint= new Paint();
 	}
 	public void Restart(){
-		cellBoard.Restart();
+		//cellBoard.Restart();
+		game.GameInitial();
 		buffer.drawColor(0,Mode.CLEAR);
 		drawBoard();
-		isover=false;
 	}
 	@Override
 	protected void onDraw(Canvas canvas){
@@ -93,12 +93,13 @@ public class MainBoard extends View{
 		vLine02[0]=p1;
 		vLine02[1]=p2;
 		
-		cellBoard=new CellBoard(cellW,cellH);
+		cellBoard=new CellBoard(cellW,cellH,game);
 	}
 	
 	public boolean TouchFunc (MotionEvent event,float a,float b){
 		//float x=event.getX();
 		//float y=event.getY();
+		ai=new AI(cellBoard,'O');
 		a=event.getX();
 		b=event.getY();
 		if(event.getAction()==MotionEvent.ACTION_DOWN){
@@ -107,14 +108,13 @@ public class MainBoard extends View{
 			int a1=(int)a,b1=(int)b;
 			if(a1>w/2+70&&a1<w/2+450&&b1>h-200&&b1<h-50){
 				Restart();
-				invalidate();
 				//buffer.drawText("Success", 0, h-30, paint);
 			}
 			
-			if(isover==false){
+			if(!game.isGameOver()){
 				RectF position=cellBoard.getCellToFill(a, b);
 				if(position!=null){
-					char present=cellBoard.getCellPresent(a,b);
+					char present=game.getPresent(cellBoard.getCellInd(a,b));
 					if(present=='X'){
 						paint.setColor(Color.BLUE);
 						buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
@@ -125,33 +125,42 @@ public class MainBoard extends View{
 						paint.setStyle(Paint.Style.STROKE);
 						buffer.drawOval(position, paint);
 					}
-					invalidate();
+					
 				}
 			}
 
 		}
-		if(cellBoard.isOver()){
-			isover=true;
+		char []tmp=new char[9];
+		for (int i=0;i<9;i++){
+			tmp[i]=game.getPresent(i);
+		}
+		if(game.isGameOver()){
+			float x1=cellBoard.getPositionX(game.getWinIndex(0));
+			float x2=cellBoard.getPositionX(game.getWinIndex(1));
+			float y1=cellBoard.getPositionY(game.getWinIndex(0));
+			float y2=cellBoard.getPositionY(game.getWinIndex(1));
 			
-			Point[] winLine=cellBoard.showWinLine();
 			paint.setColor(Color.GREEN);
 			paint.setStyle(Paint.Style.STROKE);
 			
-			if(cellBoard.winner()!=' '){
+			if(game.winner()!=' '){
 				paint.setStrokeWidth(50);
-				buffer.drawLine(winLine[0].x,winLine[0].y,winLine[1].x,winLine[1].y, paint);
+				buffer.drawLine(x1,y1,x2,y2, paint);
+				paint.setStrokeWidth(5);
+				buffer.drawText("win"+game.winner(), 80, h-200,paint);
+				//invalidate();
 			}
-			invalidate();
 		}
+		//AI turn............
+		else {
+			ai=new AI(cellBoard,'O');
+		}
+		invalidate();
 		return true;
-	}
-	public boolean isOver(){
-		
-		return isover;
 	}
 	public char printWin() {
 		// TODO Auto-generated method stub
-		return cellBoard.winner();
+		return game.winner();
 	}
 
 }

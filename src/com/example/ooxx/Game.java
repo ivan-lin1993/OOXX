@@ -40,9 +40,16 @@ public class Game {
 		}
 		return true;
 	}
+	private boolean isSame(int a,int b,int c){
+		if(table[a]!=' '&&table[a]==table[b]&&table[b]==table[c]){
+			return true;
+		}
+		else return false;
+	}
 	private char whoWin(){
 		char tmp=' ';
-		for (int i=0;i<7;i+=2){
+		
+		for (int i=0;i<=6;i+=3){
 			if(table[i]!=' '&&table[i]==table[i+1]&&table[i+1]==table[i+2]) {
 				tmp=table[i];
 				winIndex[0]=i;
@@ -54,6 +61,7 @@ public class Game {
 			if(table[i]!=' '&&table[i]==table[i+3]&&table[i+3]==table[i+6]) {
 				tmp=table[i];
 				winIndex[0]=i;
+				
 				winIndex[1]=i+6;
 				break;
 			}
@@ -68,7 +76,15 @@ public class Game {
 			winIndex[0]=2;
 			winIndex[1]=6;
 		}
-
+		
+		/*
+		if(isSame(0,1,2)){
+			tmp=table[0];
+			winIndex[0]=0;
+			winIndex[1]=2;
+		}
+		else(isSame(3,4,5))
+		*/
 		return tmp;
 
 	}

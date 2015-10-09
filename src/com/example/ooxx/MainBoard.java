@@ -130,25 +130,25 @@ public class MainBoard extends View{
 			}
 
 		}
-		char []tmp=new char[9];
+		String tmp="";
 		for (int i=0;i<9;i++){
-			tmp[i]=game.getPresent(i);
+			if(game.getPresent(i)==' ') tmp+='S';
+			else tmp+=game.getPresent(i);
 		}
+		
 		if(game.isGameOver()){
-			float x1=cellBoard.getPositionX(game.getWinIndex(0));
-			float x2=cellBoard.getPositionX(game.getWinIndex(1));
-			float y1=cellBoard.getPositionY(game.getWinIndex(0));
-			float y2=cellBoard.getPositionY(game.getWinIndex(1));
-			
 			paint.setColor(Color.GREEN);
 			paint.setStyle(Paint.Style.STROKE);
-			
 			if(game.winner()!=' '){
+				float x1=cellBoard.getPositionX(game.getWinIndex(0));
+				float x2=cellBoard.getPositionX(game.getWinIndex(1));
+				float y1=cellBoard.getPositionY(game.getWinIndex(0));
+				float y2=cellBoard.getPositionY(game.getWinIndex(1));
 				paint.setStrokeWidth(50);
 				buffer.drawLine(x1,y1,x2,y2, paint);
 				paint.setStrokeWidth(5);
-				buffer.drawText("win"+game.winner(), 80, h-200,paint);
-				//invalidate();
+				buffer.drawText(tmp, 80, h-200,paint);
+				invalidate();
 			}
 		}
 		//AI turn............

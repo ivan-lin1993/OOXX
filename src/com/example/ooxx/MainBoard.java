@@ -1,4 +1,6 @@
 package com.example.ooxx;
+import java.util.Random;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,6 +25,8 @@ public class MainBoard extends View{
 	private CellBoard cellBoard;
 	private Game game=new Game();
 	private AI ai;
+	private boolean nowAI=false;
+	
 	
 	public MainBoard (Context context){
 		super(context);
@@ -30,6 +34,7 @@ public class MainBoard extends View{
 	}
 	public void Restart(){
 		//cellBoard.Restart();
+		nowAI=false;
 		game.GameInitial();
 		buffer.drawColor(0,Mode.CLEAR);
 		drawBoard();
@@ -99,68 +104,103 @@ public class MainBoard extends View{
 	public boolean TouchFunc (MotionEvent event,float a,float b){
 		//float x=event.getX();
 		//float y=event.getY();
-		ai=new AI(cellBoard,'O');
 		a=event.getX();
 		b=event.getY();
-		if(event.getAction()==MotionEvent.ACTION_DOWN){
+		if(event.getAction()==MotionEvent.ACTION_UP){
 			
 			
 			int a1=(int)a,b1=(int)b;
 			if(a1>w/2+70&&a1<w/2+450&&b1>h-200&&b1<h-50){
 				Restart();
+				if(nowAI)AIplay();
 				//buffer.drawText("Success", 0, h-30, paint);
 			}
 			
-			if(!game.isGameOver()){
-				RectF position=cellBoard.getCellToFill(a, b);
-				if(position!=null){
-					char present=game.getPresent(cellBoard.getCellInd(a,b));
-					if(present=='X'){
-						paint.setColor(Color.BLUE);
-						buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
-						buffer.drawLine(position.right, position.top, position.left, position.bottom, paint);
+			else if(!game.isGameOver()){
+				
+				if(!nowAI){
+					RectF position=cellBoard.getCellToFill(a, b);
+					if(position!=null){
+						char present=game.getPresent(cellBoard.getCellInd(a,b));
+						drawXO(position,present);
+						nowAI=!nowAI;
 					}
-					else if (present=='O'){
-						paint.setColor(Color.RED);
-						paint.setStyle(Paint.Style.STROKE);
-						buffer.drawOval(position, paint);
-					}
+				}
+				//AI turn............
+				if(game.isGameOver()){
+					drawLine();
+				}
+				else if(nowAI) {
+					AIplay();
 					
 				}
+				if(game.isGameOver()){
+					drawLine();
+				}
 			}
-
-		}
-		String tmp="";
-		for (int i=0;i<9;i++){
-			if(game.getPresent(i)==' ') tmp+='S';
-			else tmp+=game.getPresent(i);
+			
+			invalidate();
 		}
 		
-		if(game.isGameOver()){
-			paint.setColor(Color.GREEN);
-			paint.setStyle(Paint.Style.STROKE);
-			if(game.winner()!=' '){
-				float x1=cellBoard.getPositionX(game.getWinIndex(0));
-				float x2=cellBoard.getPositionX(game.getWinIndex(1));
-				float y1=cellBoard.getPositionY(game.getWinIndex(0));
-				float y2=cellBoard.getPositionY(game.getWinIndex(1));
-				paint.setStrokeWidth(50);
-				buffer.drawLine(x1,y1,x2,y2, paint);
-				paint.setStrokeWidth(5);
-				buffer.drawText(tmp, 80, h-200,paint);
-				invalidate();
-			}
-		}
-		//AI turn............
-		else {
-			ai=new AI(cellBoard,'O');
-		}
-		invalidate();
 		return true;
 	}
 	public char printWin() {
 		// TODO Auto-generated method stub
 		return game.winner();
+	}
+	private void AIplay(){
+		ai=new AI(game,'O');
+		int move=ai.AIthink();
+//buffer.drawText(ai.teststate, 0, h-30, paint);
+		
+		game.play(move);
+		RectF position=cellBoard.getRect(move);
+		char p=game.getPresent(move);
+//		Random ran=new Random();
+//		int randplay=ran.nextInt(9);
+//		while(game.isFill(randplay)){
+//			randplay=ran.nextInt(9);
+//		}
+//		game.play(randplay);
+//		RectF position=cellBoard.getRect(randplay);
+//		char p=game.getPresent(randplay);
+		drawXO(position,p);
+		nowAI=!nowAI;
+	}
+	
+	private void drawLine(){
+		String tmp="";
+		for (int i=0;i<9;i++){
+			if(game.getPresent(i)==' ') tmp+='S';
+			else tmp+=game.getPresent(i);
+		}
+		paint.setColor(Color.GREEN);
+		paint.setStyle(Paint.Style.STROKE);
+		if(game.winner()!=' '){
+			float x1=cellBoard.getPositionX(game.getWinIndex(0));
+			float x2=cellBoard.getPositionX(game.getWinIndex(1));
+			float y1=cellBoard.getPositionY(game.getWinIndex(0));
+			float y2=cellBoard.getPositionY(game.getWinIndex(1));
+			paint.setStrokeWidth(50);
+			buffer.drawLine(x1,y1,x2,y2, paint);
+			paint.setStrokeWidth(5);
+			buffer.drawText(tmp, 80, h-200,paint);
+		}
+		invalidate();
+		
+	}
+	private void drawXO(RectF position,char present){
+		if(present=='X'){
+			paint.setColor(Color.BLUE);
+			buffer.drawLine(position.left, position.top, position.right, position.bottom, paint);
+			buffer.drawLine(position.right, position.top, position.left, position.bottom, paint);
+		}
+		else if (present=='O'){
+			paint.setColor(Color.RED);
+			paint.setStyle(Paint.Style.STROKE);
+			buffer.drawOval(position, paint);
+		}
+		invalidate();
 	}
 
 }

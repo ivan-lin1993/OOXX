@@ -40,12 +40,6 @@ public class Game {
 		}
 		return true;
 	}
-	private boolean isSame(int a,int b,int c){
-		if(table[a]!=' '&&table[a]==table[b]&&table[b]==table[c]){
-			return true;
-		}
-		else return false;
-	}
 	private char whoWin(){
 		char tmp=' ';
 		
@@ -76,15 +70,6 @@ public class Game {
 			winIndex[0]=2;
 			winIndex[1]=6;
 		}
-		
-		/*
-		if(isSame(0,1,2)){
-			tmp=table[0];
-			winIndex[0]=0;
-			winIndex[1]=2;
-		}
-		else(isSame(3,4,5))
-		*/
 		return tmp;
 
 	}

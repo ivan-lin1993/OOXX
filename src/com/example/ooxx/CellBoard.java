@@ -48,7 +48,7 @@ public class CellBoard {
 	public RectF getCellToFill(float x,float y){
 		for (Cell bp: position){
 			
-			if(bp.contains(x, y)){
+			if(bp.contains(x, y)&&!game.isFill(bp.ind)){
 				RectF retCell=new RectF(bp);
 				game.play(bp.ind);
 				return retCell;
@@ -61,5 +61,9 @@ public class CellBoard {
 	}
 	public float getPositionY(int ind){
 		return position[ind].centerY();
+	}
+	public RectF getRect(int ind){
+		RectF retCell=new RectF(position[ind].left,position[ind].top,position[ind].right,position[ind].bottom);
+		return retCell;
 	}
 }
